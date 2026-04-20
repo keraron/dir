@@ -31,9 +31,25 @@ tasks:
       - 'echo "Docs built: file://{{.BUILD_SITE}}/index.html"'
 
   run:
-    desc: Run mkdocs serve (live reload)
+    desc: >-
+      Run mkdocs serve (live reload). Picks the first free port in 8000–8009 unless MKDOCS_ADDR
+      is set (e.g. MKDOCS_ADDR=127.0.0.1:9000). Sets DISABLE_MKDOCS_2_WARNING=true by default.
     cmds:
-      - (cd "{{.REPO}}" && mkdocs serve -f mkdocs.yml)
+      - |
+        set -e
+        cd "{{.REPO}}"
+        export DISABLE_MKDOCS_2_WARNING="${DISABLE_MKDOCS_2_WARNING:-true}"
+        if [ -n "${MKDOCS_ADDR:-}" ]; then
+          exec mkdocs serve -f mkdocs.yml -a "$MKDOCS_ADDR"
+        fi
+        for port in 8000 8001 8002 8003 8004 8005 8006 8007 8008 8009; do
+          if ! lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
+            echo "mkdocs serve on 127.0.0.1:$port (set MKDOCS_ADDR to override)"
+            exec mkdocs serve -f mkdocs.yml -a "127.0.0.1:$port"
+          fi
+        done
+        echo "No free port between 8000 and 8009. Free one or set MKDOCS_ADDR." >&2
+        exit 1
 
   test:
     desc: Run all documentation lint checks
@@ -87,6 +103,7 @@ tasks:
       - git fetch origin gh-pages --depth=1 2>/dev/null || true
       - |
         set -euo pipefail
+        export MKDOCS_SITE_URL="${MKDOCS_SITE_URL:-https://agntcy.github.io/dir/}"
         MIKE_LOCAL="$(python3 docs/mike_version.py local)"
         mike deploy "$MIKE_LOCAL" latest --update-aliases
         mike set-default latest
@@ -102,13 +119,17 @@ tasks:
       - git fetch origin gh-pages --depth=1 2>/dev/null || true
       - |
         set -euo pipefail
+        export MKDOCS_SITE_URL="${MKDOCS_SITE_URL:-https://agntcy.github.io/dir/}"
         MIKE_VERSION="$(python3 docs/mike_version.py release)"
         mike deploy --push --update-aliases "$MIKE_VERSION" latest
         mike set-default --push latest
         mike list
 
   mike:serve:
-    desc: Serve versioned site from local gh-pages (run mike:deploy-local first)
+    desc: >-
+      Serve versioned site from local gh-pages (run mike:deploy-local first). Uses MKDOCS_SITE_URL if set.
     dir: "{{.REPO}}"
     cmds:
-      - mike serve -f mkdocs.yml -a 127.0.0.1:8000
+      - |
+        export MKDOCS_SITE_URL="${MKDOCS_SITE_URL:-https://agntcy.github.io/dir/}"
+        exec mike serve -f mkdocs.yml -a 127.0.0.1:8000

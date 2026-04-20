@@ -2,7 +2,9 @@
 # Build: task docs:build   or: mkdocs build -f mkdocs.yml --site-dir .build/site
 
 site_name: Directory documentation
-site_url: https://agntcy.github.io/dir/
+# Local `mkdocs serve` must use a site_url *without* a path segment, or only /dir/... URLs work (404 at /).
+# CI sets MKDOCS_SITE_URL for production builds. Default: local dev server root.
+site_url: !ENV [MKDOCS_SITE_URL, 'http://127.0.0.1:8000/']
 
 docs_dir: docs
 
@@ -63,10 +65,38 @@ plugins:
     alias_type: redirect
   redirects:
     redirect_maps: {}
-  awesome-pages:
-    filename: ".index"
-    collapse_single_pages: true
-    strict: false
+
+# Flat sidebar (all top-level). Using awesome-pages + docs/dir/.index nested everything under "dir".
+nav:
+  - index.md
+  - Overview: dir/overview.md
+  - Getting Started: dir/getting-started.md
+  - Features and Usage Scenarios: dir/scenarios.md
+  - Production Deployment: dir/prod-deployment.md
+  - CLI Guide: dir/directory-cli.md
+  - MCP Server: dir/directory-mcp.md
+  - Federation:
+      - Running a Federated Directory Instance: dir/partner-prod-federation.md
+      - Profiles: dir/federation-profiles.md
+      - Best Practices and Troubleshooting: dir/federation-troubleshooting.md
+  - Reference:
+      - CLI Reference: dir/directory-cli-reference.md
+      - API Reference: dir/dir-api-reference.md
+      - Directory SDK: dir/directory-sdk.md
+      - Directory GUI: dir/directory-gui.md
+  - Architecture: dir/architecture.md
+  - Components:
+      - Runtime Discovery: dir/runtime.md
+      - Event Streaming: dir/events.md
+      - Records and Validation: dir/records-validation.md
+      - Validation: dir/validation.md
+  - Trust Model: dir/trust-model.md
+  - integrations.md
+  - security-schema.md
+  - RFCs:
+      - "Security schema (RFC)": rfc/01-security-schema.md
+      - "RFC template": rfc/template.md
+  - "Research (integration slides)": research-integration-slides.md
 
 theme:
   name: material

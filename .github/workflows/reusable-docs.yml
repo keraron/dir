@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      MKDOCS_SITE_URL: https://agntcy.github.io/dir/
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
