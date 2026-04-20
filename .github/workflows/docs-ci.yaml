@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Cisco and/or its affiliates.
+# SPDX-License-Identifier: Apache-2.0
+#
+# CI: build docs on PR/push when docs or mkdocs change. Copy to .github/workflows/ at repo root.
+
+name: Documentation CI
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/reusable-docs.yml'
+      - '.github/workflows/docs-ci.yaml'
+
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/reusable-docs.yml'
+      - '.github/workflows/docs-ci.yaml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: Docs
+    uses: ./.github/workflows/reusable-docs.yml
+    permissions:
+      contents: read
+    with:
+      version: dev
+
+  success:
+    name: Success
+    if: ${{ !cancelled() && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'failure') }}
+    needs:
+      - docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Success
+        run: echo "::notice Success!"
