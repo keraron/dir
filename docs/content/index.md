@@ -6,9 +6,28 @@ hide:
 
 ---
 
-<div style="text-align: center;">
+<div class="landing-hero">
   <div class="centered-logo-text-group">
     <h1>Agent Directory Service</h1>
+  </div>
+  <div class="lf-partner-badge">
+    <span class="lf-partner-badge__text">part of</span>
+    <a
+      href="https://www.linuxfoundation.org/press/linux-foundation-welcomes-the-agntcy-project-to-standardize-open-multi-agent-system-infrastructure-and-break-down-ai-agent-silos"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="assets/lf-horizontal-black.png"
+        alt="Linux Foundation"
+        class="logo-light lf-partner-badge__logo"
+      />
+      <img
+        src="assets/lf-horizontal-white.png"
+        alt="Linux Foundation"
+        class="logo-dark lf-partner-badge__logo"
+      />
+    </a>
   </div>
 </div>
 
@@ -109,46 +128,5 @@ through content routing and DHT-based federation.
     multi-agent system infrastructure and break down AI agent silos.
 
     [:octicons-arrow-right-24: LF press release](https://www.linuxfoundation.org/press/linux-foundation-welcomes-the-agntcy-project-to-standardize-open-multi-agent-system-infrastructure-and-break-down-ai-agent-silos)
-
-</div>
-
----
-
-## Announcement and lookup across directory nodes
-
-Independent directory servers store agent records locally and announce skill
-mappings into a shared routing layer. When a client searches by capability,
-the network returns record identifiers and the servers that host them—the
-sequence below walks through publication and discovery end to end.
-
-<div class="centered-diagram" markdown="1">
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant DHT
-    participant ServerA
-    participant ServerB
-    participant ServerC
-
-    Note over ServerA,ServerC: Publication Phase
-    ServerA->>ServerA: Generate record CID
-    ServerA->>ServerA: Extract skills from record
-    ServerA->>ServerA: Store record locally
-    ServerA->>DHT: Announce CID + skills
-    ServerB->>ServerB: Generate record CID
-    ServerB->>ServerB: Extract skills from record
-    ServerB->>ServerB: Store record locally
-    ServerB->>DHT: Announce CID + skills
-    DHT->>DHT: Update routing tables<br/>(skills→CIDs→servers)
-
-    Note over User,ServerC: Discovery Phase
-    User->>DHT: Query by skills
-    DHT->>DHT: Search routing tables
-    DHT->>User: Return matching CIDs<br/>+ server addresses
-    User->>User: Select records
-    User->>ServerA: Download record 1
-    User->>ServerB: Download record 2
-```
 
 </div>
