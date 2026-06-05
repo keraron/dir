@@ -61,6 +61,42 @@
   background-color: var(--md-primary-fg-color) !important;
 }
 
+/* Announcement banner */
+.md-banner__inner {
+  text-align: center;
+  padding-inline: 2.5rem;
+}
+
+[data-md-color-scheme="default"] .md-banner {
+  background-color: rgb(2, 81, 175);
+  color: rgb(243, 246, 253);
+}
+
+[data-md-color-scheme="default"] .md-banner a {
+  color: rgb(243, 246, 253);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+[data-md-color-scheme="default"] .md-banner__button {
+  color: rgb(243, 246, 253);
+}
+
+[data-md-color-scheme="slate"] .md-banner {
+  background-color: rgb(251, 175, 70);
+  color: rgb(3, 20, 43);
+}
+
+[data-md-color-scheme="slate"] .md-banner a {
+  color: rgb(3, 20, 43);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .md-banner__button {
+  color: rgb(3, 20, 43);
+}
+
 /* Tab bar: match header (Material defaults tabs to --md-primary-fg-color--dark) */
 .md-tabs {
   background-color: var(--md-primary-fg-color);
